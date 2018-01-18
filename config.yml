@@ -1,0 +1,11 @@
+app:
+    url: http://localhost:3000
+
+db:
+    url: mongodb://localhost/fedo
+
+mail:
+    mailer:
+        apiKey: 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
+    from: feedback@fedo.com
+    fromName: Team Fedo

@@ -1,0 +1,57 @@
+form#feedbackForm(name="feedbackForm", action= url, method="GET")
+    table(width="100%")
+        tr 
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+            td(wdth="90%" style="font-family: Arial;text-align:left;font-size:14px;letter-spacing:0px;color:rgb(103,106,108);padding:5px 0;font-weight:700") Rate the feature
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+        tr
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+            td(width="90%" style="font-family: Arial; color:rgb(253,199,5); direction: ltr; text-align: left;padding:12px 0;")
+                div(style="")
+                    span(style="line-height:2;")
+                      input#star5(type="radio", name="star", value="5" style="width:11px;height:11px;cursor:default;")
+                      label(for="star5" style="margin: 0 8px 0 4px;")
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                    span(style="line-height:2;")
+                      input#star4(type="radio", name="star", value="4" style="width:11px;height:11px;cursor:default;")
+                      label(for="star4" style="margin: 0 8px 0 4px;")
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                    span(style="line-height:2;")
+                      input#star3(type="radio", name="star", value="3" style="width:11px;height:11px;cursor:default;")
+                      label(for="star3" style="margin: 0 8px 0 4px;") 
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                    span(style="line-height:2;")
+                      input#star2(type="radio", name="star", value="2" style="width:11px;height:11px;cursor:default;")
+                      label(for="star2" style="margin: 0 8px 0 4px;")
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+                    span(style="line-height:2;")
+                      input#star1(type="radio", name="star", value="1" style="width:11px;height:11px;cursor:default;")
+                      label(for="star1" style="margin: 0 8px 0 4px;")
+                        span.star(style="color:rgb(242,181,54);font-size:16px;margin-right:4px;") ★
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+        tr
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+            td(wdth="90%" style="font-family: Arial;text-align:left;font-size:14px;letter-spacing:0px;color:rgb(103,106,108);padding:5px 0;font-weight:700") Feedback for us
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+        tr 
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+            td(width="90%", style="font-family:Arial;color:rgb(103,106,108);padding: 12px 0 40px;")
+                div.feedbackBox
+                  textarea#feedbackBox(name="feedbackBox", placeholder="Write your feedback here" style="color:rgb(103,106,108);width:99%;padding:8px 6px;height:60px;font-size:0.9em;border: 1px solid rgb(219,221,222);font-weight:lighter;border-radius:5px; font-family:inherit;")
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+        tr
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+            td(width="90%", style="color:rgb(103,106,108);font-family:Arial;text-align:center")
+                button(type="submit" style="border:1px solid transparent;border-color:#40a9ff;background-color:#40a9ff;color:#fff;text-decoration:none;outline:0;line-height:1.15;height:32px;padding:0 15px;font-weight:bold;text-align:center;border-radius:4px;font-size:12px;white-space:nowrap;cursor:pointer; min-width:160px;min-height:32px;margin-top:15px;")= cta
+            td(width="5%", style="color:rgb(103,106,108);font-family:Arial")
+

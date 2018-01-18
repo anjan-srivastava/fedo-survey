@@ -1,0 +1,32 @@
+extends layout
+
+block content 
+    include header.jade
+    div.login(style="margin-bottom: 60px;")
+        h2.login-header Get started with your team account
+        div.login-container
+            form#login(action="/api/signup" method="post")
+                p.name
+                    label(for="name") Name
+                    input(name="name", type="text", placeholder="Name", required="")
+                    span.error.hide Name is required!
+                p.email
+                    label(for="email") Email
+                    input(name="email",type="email",placeholder="Email",required="", pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")
+                    span.error.hide Whoops! Invalid Email!
+                p.company
+                    label(for="company") Company
+                    input(name="company", type="text", placeholder="Company", required="")
+                    span.error.hide Company name is required!
+                p.password
+                    label(for="password") Password
+                    input(name="password",type="password", placeholder="Password", pattern=".{8,}" required="")
+                    span.error.hide Whoops! Invalid Password pattern
+                    span.info 8 characters minimum
+                p
+                    span.error-submit.hide Whoops! Invalid Password pattern
+                    input(type="submit", value="Sign up")
+            p.message.center.hide
+                span.info Check your email and click on the activation link
+
+    include footer.jade

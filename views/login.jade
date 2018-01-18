@@ -1,0 +1,24 @@
+extends layout
+
+block content
+    include header.jade
+    div.login
+        h2.login-header Log in
+        p.info
+           span Need a fedo account? <a href="/signup" class="link">Create one now</a> 
+        div.login-container
+            form(action="/login", method="POST", id="login")
+                p.email
+                    label(for="username") Email
+                    input#username(name="username" type="email" placeholder="Email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")
+                    span.error.hide Whoops invalid email!
+                p.password
+                    label(for="password") Password
+                    input#password(name="password" type="password" placeholder="Password" required)
+                    span.error.hide Please enter your password
+                    a.link(href="/forgotpasswd") Forgot password?
+                p.submit
+                    span.error-submit.hide Email or password is invalid
+                    input(type="submit" value="Log in")
+                    
+       include footer.jade 

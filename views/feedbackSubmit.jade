@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    - var displayPoweredByText = poweredByText || false;
+    div(style="width:100%;max-width:800px;margin:100px auto;text-align:center;")
+        h3!= message
+        - if (displayPoweredByText) {
+        small Powered by <a href="http://fedo.io" style="text-decoration:none;color:rgb(47,132,237)">Fedo</a>
+        - }

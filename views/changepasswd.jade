@@ -1,0 +1,24 @@
+extends layout
+
+block content 
+    include header.jade
+    div.login
+        h2.login-header Enter new password
+        div.login-container
+            form#login(action="/api/forgotpasswd/update" method="post")
+                p.password
+                    label(for="password") Password
+                    input(name="password",type="password", placeholder="Password", pattern=".{8,}" required="")
+                    span.error.hide Whoops! Invalid Password pattern
+                    span.info 8 characters minimum
+                p.password
+                    label(for="confirmpassword") Confirm Password
+                    input(name="confirmpassword",type="password", placeholder="Confirm Password", pattern=".{8,}" required="")
+                    span.error.hide Whoops! Invalid Password pattern
+                p
+                    input(type="hidden" name="token" value= passwdToken)
+                p
+                    span.error-submit.hide Whoops! Invalid Password pattern
+                    input(type="submit", value="Set new password")
+
+    include footer.jade
