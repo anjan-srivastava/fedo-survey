@@ -16,6 +16,8 @@ var User = require('./models/User');
 // routes
 var index = require('./routes/index');
 var user = require('./routes/user');
+var settings = require('./routes/settings');
+var widgetManager = require('./routes/widgetManager');
 var recepients = require('./routes/recepients');
 var feedback = require('./routes/feedback');
 var feedbacksubmit = require('./routes/feedbacksubmit');
@@ -115,10 +117,15 @@ app.get('/logout',
     res.redirect('/login');
   });
 
-app.use('/', index);
+app.use('/widgets', widgetManager);
+
+
 app.use('/api/users', 
         require('connect-ensure-login').ensureLoggedIn(),
         user);
+app.use('/api/settings', 
+        require('connect-ensure-login').ensureLoggedIn(),
+        settings);
 app.use('/api/recepients', 
         require('connect-ensure-login').ensureLoggedIn(),
         recepients);
@@ -134,6 +141,10 @@ app.use('/api/forgotpasswd',
 app.use('/api/feedbacks',
         require('connect-ensure-login').ensureLoggedIn(),
         feedback);
+
+app.use('/', 
+        require('connect-ensure-login').ensureLoggedIn(),
+        index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

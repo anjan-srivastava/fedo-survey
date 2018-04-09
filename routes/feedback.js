@@ -100,4 +100,31 @@ router.get('/tags', function(req, res, next) {
         });        
 });
 
+router.put('/:fkey/publish', function(req, res, next) {
+    FeedbackRecord.update({feedbackKey: req.params.fkey},
+            {$set: {isPublished: true}})
+            .exec(function(err, doc) {
+                console.log("Publish: ", doc);
+                if (err) {
+                    res.json({success: false, msg: "Something went wrong while publishing."});
+                } else {
+                    res.json({success: true, msg: "Successfully published review."});
+                }
+                res.end();
+            });
+});
+
+router.put('/:fkey/unpublish', function(req, res, next) {
+    FeedbackRecord.update({feedbackKey: req.params.fkey},
+            {$set: {isPublished: false}})
+            .exec(function(err, doc) {
+                if (err) {
+                    res.json({success: false, msg: "Something went wrong while unpublishing."});
+                } else {
+                    res.json({success: true, msg: "Successfully unpublished review."});
+                }
+                res.end();
+            });
+});
+
 module.exports = router;

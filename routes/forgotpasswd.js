@@ -16,11 +16,7 @@ router.post('/sendlink', function(req, res, next) {
         User.findOne({username: email}, function(err, user) {
             if (err) {
                 res.status('500').render('feedbackSubmit', { title: 'Error', message: 'Something went wrong, please try again'});
-                res.end();
-                return;
-            }
-            
-            if (user && user.active) {
+            } else if (user && user.active) {
                 const passwdToken = uuid();
                 const changeLink = config.app.url + '/api/forgotpasswd/change/' + passwdToken;
 
@@ -36,9 +32,9 @@ router.post('/sendlink', function(req, res, next) {
                     mailBody: '<p>Please <a href="' + changeLink +'">click here</a> to change your password.</p>'
                 });
                 res.render('feedbackSubmit', { title: 'Change password mail sent', message: 'Please check your mail to continue...'});
-                res.end();
             
             }        
+            res.end();
         });
 
     }
