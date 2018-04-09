@@ -5,6 +5,7 @@ var uuid = require('uuid/v4');
 var config = require('config-yml');
 var mongoose = require('mongoose');
 var Settings = require('../models/Settings');
+var User = require('../models/User');
 
 mongoose.connect(config.db.url, { useMongoClient: true });
 
@@ -119,4 +120,64 @@ var resetWidgetConfig = function(widgetToken, callback) {
     });
 };
 
+
+
+/***** Profile settings apis *****/
+
+router.get('/profile', function(req, res, next) {
+    User.findOne({ username: req.user.username } )
+        .select({_id: 0, __v: 0, activationToken: 0, passwdToken: 0, password: 0 })
+        .exec(function (err, doc) {
+            if (err) {
+                res.status(500).send('Something went wrong.');
+            } else {
+                res.json(doc);
+            }
+
+            res.end();
+        });
+});
+
+router.post('/profile', function(req, res, next) {
+    var profileUpdates = req.body;
+    if (!profileUpdates.username ||
+            !profileUpdates.company) {
+        res.end();
+        return;
+    }
+
+    User.update({ username: req.user.username }, {
+        $set: {
+            username: profileUpdates.username,
+            name: profileUpdates.name,
+            lname: profileUpdates.lname,
+            contactNumber: profileUpdates.contactNumber,
+            company: profileUpdates.company,
+            address: profileUpdates.address
+        }
+    }).exec(function(err, doc) {
+        if (err) {
+            res.json({success: false, msg: 'Error while saving profile, please retry.'});
+            res.end();
+        } else {
+            Settings.update({ username: req.user.username },
+                    {$set: {
+                        username: profileUpdates.username,
+                        company: profileUpdates.company,   
+                     }})
+            .exec(function(err, doc) {
+                if (err) {
+                    res.json({success: false, msg: 'Error while saving profile, partially saved.'});
+                } else {
+                    res.json({success: true, msg: 'Successfully saved profile settings.'});
+                };
+
+                // TODO might have to reload the session
+                req.user.username = profileUpdates.username;
+                req.user.company = profileUpdates.company;
+                res.end();
+            });
+        }
+    });
+});
 module.exports = router;
