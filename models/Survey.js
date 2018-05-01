@@ -13,7 +13,8 @@ var schema = new mongoose.Schema({
     cta: String,
     signature: String,
     created: Date,
-    createdBy: Object
+    createdBy: Object,
+    sample: Boolean
 });
 
 schema.plugin(mongoosePaginate);

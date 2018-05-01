@@ -1,11 +1,12 @@
 app:
-#    url: http://localhost:3000
-    url: http://192.168.0.105:3000
+    url: http://localhost:3000
 db:
     url: mongodb://localhost/fedo
-
+analytics:
+    enable: true
+    apiToken: 59e2ecc34d1297d7e784664939fe125f
 mail:
     mailer:
-        apiKey: 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
-    from: feedback@fedo.com
-    fromName: Team Fedo
+        apiKey: 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
+    from: reviews@outreech.com
+    fromName: Team Outreech

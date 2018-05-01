@@ -5,6 +5,7 @@ var uuid = require('uuid/v4');
 var config = require('config-yml');
 var mongoose = require('mongoose');
 var Settings = require('../models/Settings');
+var License = require('../models/License');
 var User = require('../models/User');
 
 mongoose.connect(config.db.url, { useMongoClient: true });
@@ -12,7 +13,7 @@ mongoose.connect(config.db.url, { useMongoClient: true });
 // TODO decide where to put this
 // in DB or in config file
 const defaultWidgetConfig = {
-    licenseReviewLimit: 10,
+    licenseReviewLimit: 5,
     settings: {
         enabled: true,
         position: 0, // 0: left, 1: right
@@ -56,7 +57,8 @@ router.get('/widgetUrl', function(req, res, next) {
                     company: req.user.company,
                     updated: new Date(),
                     widgetToken: widgetToken,
-                    widgetConfig: defaultWidgetConfig
+                    widgetConfig: defaultWidgetConfig,
+                    emailConfig: { fromField: req.user.company, replyTo: req.user.username }
                 }).save(function(err) {
                     if (err) {
                         console.log("Second", err);
@@ -77,11 +79,19 @@ router.get('/widget', function(req, res, next) {
     Settings.findOne({username: req.user.username, company: req.user.company})
         .select({widgetConfig: 1})
         .exec(function (err ,doc) {
-            if (err) res.status(500).send('Something went wrong.');
-            else if (doc) res.json(doc.widgetConfig);
-            // TODO default config
-            //
-            res.end();
+            if (err)  {
+                res.status(500).send('Something went wrong.');
+                res.end();
+            } else if (doc) {
+                License.findOne({userId: req.user._id})
+                    .exec (function (err, license) {
+                        if (!err && license) {
+                            doc.widgetConfig.licenseReviewLimit = license.maxlimits.review;
+                        }
+                        res.json(doc.widgetConfig);
+                        res.end();
+                    });
+            }
         });
 });
 
@@ -91,7 +101,7 @@ router.put('/widget', function(req, res, next) {
             {$set: {widgetConfig: req.body }})
         .exec(function(err, doc) {
             if (err) res.json({success: false, msg: 'Error while updating settings.'});
-            else res.json({success: true, msg: 'Successfully saved your settings.'});
+            else res.json({success: true, msg: 'You settings were successfully saved.'});
 
             res.end();
         })
@@ -169,7 +179,7 @@ router.post('/profile', function(req, res, next) {
                 if (err) {
                     res.json({success: false, msg: 'Error while saving profile, partially saved.'});
                 } else {
-                    res.json({success: true, msg: 'Successfully saved profile settings.'});
+                    res.json({success: true, msg: 'You settings were successfully saved.'});
                 };
 
                 // TODO might have to reload the session
@@ -179,5 +189,35 @@ router.post('/profile', function(req, res, next) {
             });
         }
     });
+});
+
+
+router.get('/email', function(req, res, next) {
+    Settings.findOne({username: req.user.username, company: req.user.company})
+        .select({_id:0, __v:0})
+        .exec(function (err, doc) {
+            if (err) {
+               res.status(500).send('Something went wrong.');
+            } else if (doc && doc.emailConfig) {
+                res.json(doc.emailConfig);
+            } else if (doc){
+                res.json({fromField: req.user.company}); // use company name as default from field
+            }
+            res.end();
+        });
+});
+
+
+router.post('/email', function(req, res, next) {
+    Settings.update({username: req.user.username, company: req.user.company},
+            {$set: { 'emailConfig.fromField': req.body.fromName, 'emailConfig.replyTo': req.body.replyTo }})
+        .exec(function (err, doc) {
+            if (err) {
+               res.json({success: false, msg: 'Something went wrong.'})
+            } else {
+                res.json({success: true, msg: 'You settings were successfully saved.'});
+            }
+            res.end();
+        });
 });
 module.exports = router;

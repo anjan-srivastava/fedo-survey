@@ -12,6 +12,7 @@ var schema = new mongoose.Schema({
     updated: Date,
     active: Boolean,
     activationToken: String,
+    firstLogin: Boolean,
     passwdToken: String
 });
 

@@ -6,7 +6,8 @@ var schema = new mongoose.Schema({
     company: String,
     updated: Date,
     widgetToken: String,
-    widgetConfig: Object
+    widgetConfig: Object,
+    emailConfig: Object
 });
 
 module.exports = mongoose.model('Settings', schema);

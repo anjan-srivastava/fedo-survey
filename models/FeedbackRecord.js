@@ -12,7 +12,8 @@ var schema = new mongoose.Schema({
     tags: [String],
     updated: Date,
     createdBy: Object,
-    isPublished: Boolean
+    isPublished: Boolean,
+    sample: Boolean
 });
 
 schema.plugin(mongoosePaginate);

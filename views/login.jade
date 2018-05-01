@@ -3,9 +3,11 @@ extends layout
 block content
     include header.jade
     div.login
+        p
+            span.error.hide(id="global-error")
         h2.login-header Log in
         p.info
-           span Need a fedo account? <a href="/signup" class="link">Create one now</a> 
+           span Need an Outreech account? <a href="/signup" class="link">Create one now</a> 
         div.login-container
             form(action="/login", method="POST", id="login")
                 p.email
@@ -21,4 +23,24 @@ block content
                     span.error-submit.hide Email or password is invalid
                     input(type="submit" value="Log in")
                     
+                script.
+                    (function() {
+                        var queryParam = function () {
+                            var s = window.location.search.substring(1),
+                                p = s.split('&'),
+                                parsed = {};
+                            p.forEach(function(d) { var x = d.split('='); parsed[x[0]] = x[1]; });
+                            return function (key) { return parsed[key]; };
+                        }(),
+                        showError = function() {
+                            var msg = queryParam('error');
+                            if (msg && msg.length) {
+                                var elem = document.getElementById('global-error');
+                                elem.innerText = window.decodeURIComponent(msg);
+                                elem.classList.remove('hide');
+                            }
+                        };
+       
+                        showError();
+                    }());
        include footer.jade 

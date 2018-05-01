@@ -87,7 +87,7 @@ router.post('/', function(req, res, next) {
 router.get('/tags', function(req, res, next) {
     const prefix = req.query.q;
     let result = [];
-    Survey.distinct('tags')
+    Survey.distinct('tags', {'createdBy.id': req.user._id})
         .exec(function(err, tags) {
             if (err) res.json(result);
             else {
@@ -108,7 +108,7 @@ router.put('/:fkey/publish', function(req, res, next) {
                 if (err) {
                     res.json({success: false, msg: "Something went wrong while publishing."});
                 } else {
-                    res.json({success: true, msg: "Successfully published review."});
+                    res.json({success: true, msg: "Your review was successfully published."});
                 }
                 res.end();
             });
@@ -121,10 +121,22 @@ router.put('/:fkey/unpublish', function(req, res, next) {
                 if (err) {
                     res.json({success: false, msg: "Something went wrong while unpublishing."});
                 } else {
-                    res.json({success: true, msg: "Successfully unpublished review."});
+                    res.json({success: true, msg: "Your review was successfully unpublished."});
                 }
                 res.end();
             });
 });
 
+router.put('/:fkey/edit', function(req, res, next) {
+    FeedbackRecord.update({ feedbackKey: req.params.fkey },
+            {$set: {name: req.body.name}})
+        .exec(function(err, doc) {
+                if (err) {
+                    res.json({success: false, msg: "Something went wrong while changing reviewer's name."});
+                } else {
+                    res.json({success: true, msg: "Successfully updated reviwer's name."});
+                }
+                res.end();
+        });
+});
 module.exports = router;

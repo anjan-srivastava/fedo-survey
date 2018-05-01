@@ -2,10 +2,13 @@ var express = require('express');
 var mongoose = require('mongoose');
 var uuid = require('uuid/v4');
 var config = require('config-yml');
+var fs = require('fs');
 
 var Survey = require('../models/Survey');
 var FeedbackRecord = require('../models/FeedbackRecord');
+var Settings = require('../models/Settings');
 var campaignMailer = require('../utils/mail/campaignMailer');
+var saveOrEdit = require('./surveyhelper');
 var router = express.Router();
 
 mongoose.connect(config.db.url, {useMongoClient: true});
@@ -57,9 +60,11 @@ router.post('/create', function(req, res, next) {
     }
 
     data.createdBy =  { name: req.user.name, id: req.user._id } ;
-    saveOrEdit(data);     
+    data.username = req.user.username;
+    data.company = req.user.company;
+    const surveyKey = saveOrEdit(data);     
 
-    res.json({status: "success"});
+    res.json({status: "success", surveykey: surveyKey});
     res.end();
 });
 
@@ -83,93 +88,13 @@ router.post('/:surveyKey/edit', function(req, res, next) {
     }
 
     data.createdBy =  { name: req.user.name, id: req.user._id } ;
-    saveOrEdit(data);     
+    data.username = req.user.username;
+    data.company = req.user.company;
+    const surveyKey = saveOrEdit(data);     
 
-    res.json({status: "success"});
+    res.json({status: "success", surveykey: surveyKey});
     res.end();
 
 });
-
-function saveOrEdit(data) {
-    const recepients = data.recepients 
-    const testRun = data.testRun;
-    
-    if (recepients && typeof recepients.map === 'function') {
-        // Generate survey key and feedbacks key
-        let surveyKey = uuid();
-        let surveyId = null;
-        let fkeys = [];
-
-        // check if survey already exists then modify it.
-        Survey.findOne({surveyKey: data.surveyKey}, function(err, result) {
-            if (!err && result) {
-                surveyKey = data.surveyKey;
-                surveyId = result._id;
-                console.log("Survey Id Callback: ", surveyId); 
-            }
-            
-            if (! data.saveOnly ) {
-                console.log("Preparing for sending emails.");
-                const mailerOptions = {
-                    //create recepients and respective submit urls
-                    //this option can be used to customize user emails
-                    recepients: recepients.map(function(email) { 
-                        const fkey = uuid();
-                        fkeys.push(fkey);
-                        return {
-                            email: email,
-                            submitUrl: config.app.url + '/api/feedbacks/submit/' + surveyKey + '/' + fkey,
-                            webformUrl: config.app.url + '/api/feedbacks/submit/webform?sk=' + surveyKey+'&fk='+fkey
-                        }
-                    }),
-
-                    mailSubject: data.subject,
-                    mailBody: data.mailBody,
-                    cta: data.cta,
-                    signature: data.signature
-                };
-               
-                // Generate and send mails. 
-                campaignMailer.sendCampaignMail(mailerOptions);
-            }
-            // Do not create campaign in case of test run.
-            if (!testRun) {
-                console.log("Creating campaign, as this is not test run.");
-                // Create Survey and respective feedbacks in DB
-                console.log("Survey Id: ", surveyId); 
-                // TODO make this user initiated action
-                var campaign = new Survey({ _id: surveyId,
-                              surveyKey: surveyKey,
-                              created: new Date(),
-                              ...data });
-                if (surveyId) { 
-                    campaign.isNew = false;
-                }
-                campaign.save(function(err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                });
-
-                recepients.forEach(function(mail, index) {
-                    const fkey = fkeys[index];
-                    // save feedback record in db
-                    (new FeedbackRecord({
-                        emailId: mail,
-                        surveyKey: surveyKey,
-                        feedbackKey: fkey,
-                        status: 'sent',
-                        tags: data.tags,
-                        updated: new Date(),
-                        createdBy: data.createdBy
-                    })).save(function(err) {
-                        console.log(err);
-                    });
-                });
-            }
-        });
-    }
-
-}
 
 module.exports = router;

@@ -3,6 +3,8 @@ extends layout
 block content 
     include header.jade
     div.login(style="margin-bottom: 60px;")
+        p
+            span.hide.error(id="global-error")
         h2.login-header Get started with your team account
         div.login-container
             form#login(action="/api/signup" method="post")
@@ -26,7 +28,35 @@ block content
                 p
                     span.error-submit.hide Whoops! Invalid Password pattern
                     input(type="submit", value="Sign up")
+                p
+                    input(name="plan", type="hidden", id="plantype")
+                    span.error.hide Company name is required!
             p.message.center.hide
                 span.info Check your email and click on the activation link
+            
+            script.
+                (function() {
+                    var queryParam = function () {
+                        var s = window.location.search.substring(1),
+                            p = s.split('&'),
+                            parsed = {};
+                        p.forEach(function(d) { var x = d.split('='); parsed[x[0]] = x[1]; });
+                        return function (key) { return parsed[key]; }; 
+                    }(),
+                    capturePlan = function() {
+                        document.getElementById('plantype').value = queryParam('plan');
+                    },
+                    showError = function() {
+                        var msg = queryParam('error');
+                        if (msg && msg.length) {
+                            var elem = document.getElementById('global-error');
+                            elem.innerText = window.decodeURIComponent(msg);
+                            elem.classList.remove('hide');
+                        }
+                    };
+    
+                    capturePlan();
+                    showError(); 
+                }());
 
     include footer.jade

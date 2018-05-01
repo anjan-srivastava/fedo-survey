@@ -25,6 +25,9 @@ var survey = require('./routes/survey');
 var signup = require('./routes/signup');
 var forgotpasswd = require('./routes/forgotpasswd');
 
+var analytics = require('./utils/analytics/mixpanel');
+var limits = require('./utils/limits');
+
 mongoose.connect(config.db.url, {useMongoClient: true});
 
 var app = express();
@@ -39,7 +42,11 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// for website
+app.use(express.static(path.join(__dirname, 'Outreech')));
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use(session({secret: 'c50e92ee0-5cc3-4323-b836-ae6c8a4f6ad2', saveUninitialized: false, resave: false }))
 app.use(passport.initialize());
@@ -88,25 +95,30 @@ app.use(function (err, req, res, next) {
 
 **/
 
+// license limit enforcer
+app.use(limits);
+// app level Analytics
+config.analytics.enable && app.use(analytics);
+
 app.get('/signup',
   function(req, res){
-    res.render('signup', { title: 'Fedo - Signup', contentStyle: '/stylesheets/login.css'});
+    res.render('signup', { title: 'Outreech - Signup', contentStyle: '/stylesheets/login.css'});
   });
 
 app.get('/forgotpasswd',
   function(req, res){
-    res.render('forgotPassword', { title: 'Fedo - Forgot Password', contentStyle: '/stylesheets/login.css'});
+    res.render('forgotPassword', { title: 'Outreech - Forgot Password', contentStyle: '/stylesheets/login.css'});
   });
 
 app.get('/login',
   function(req, res){
-    res.render('login', { title: 'Fedo - Login', contentStyle: '/stylesheets/login.css'});
+    res.render('login', { title: 'Outreech - Login', contentStyle: '/stylesheets/login.css'});
   });
   
 app.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
+  passport.authenticate('local', { failureRedirect: '/login?error=Invalid email or password.' }),
   function(req, res) {
-    res.redirect('/');
+    res.redirect('/app/');
   });
   
 app.get('/logout',
@@ -114,7 +126,7 @@ app.get('/logout',
     req.logout();
     if (req.session) req.session.destroy();
     res.set("Connection", "close");
-    res.redirect('/login');
+    res.redirect('/');
   });
 
 app.use('/widgets', widgetManager);
@@ -142,9 +154,13 @@ app.use('/api/feedbacks',
         require('connect-ensure-login').ensureLoggedIn(),
         feedback);
 
-app.use('/', 
+app.use('/app/', 
         require('connect-ensure-login').ensureLoggedIn(),
         index);
+
+app.use('/', function(req, res) {
+    res.sendFile(path.join(__dirname, './Outreech/index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

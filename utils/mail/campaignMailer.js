@@ -40,12 +40,13 @@ let sendMail = function(options, type) {
         // prepare message
             const msg = {
                 to: recepient.email,
-                from: { email: config.mail.from, name: config.mail.fromName },
+                from: { email: config.mail.from, name: (options.fromName? options.fromName: config.mail.fromName) },
                 subject: options.mailSubject,
+                reply_to: options.replyto,
                 html: mailBody
             };
 
-            console.log("Sending mail to ", recepient.email);
+            console.log("Sending mail to ", recepient.email, options.replyto);
             this.mailer.send(msg);
         }).bind(this));
     }

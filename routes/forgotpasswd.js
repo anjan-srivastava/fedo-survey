@@ -28,10 +28,10 @@ router.post('/sendlink', function(req, res, next) {
 
                 campaignMailer.sendMail({
                     recepients: [ { email: email }],
-                    mailSubject: 'Fedo - Change Password',
+                    mailSubject: 'Outreech - Change Password',
                     mailBody: '<p>Please <a href="' + changeLink +'">click here</a> to change your password.</p>'
                 });
-                res.render('feedbackSubmit', { title: 'Change password mail sent', message: 'Please check your mail to continue...'});
+                res.render('feedbackSubmit', { title: 'Password change email', message: 'Please check your mail to continue...'});
             
             }        
             res.end();
@@ -97,7 +97,7 @@ router.post('/update', function(req, res, next) {
                             if (err) console.log("Error while updating password.", err);
                         });
                         
-                        res.render('feedbackSubmit', {title: 'Password Changed', message: 'Password changed successully, <a style="text-decoration:none;color:rgb(47,132,237)" href="/login">Login</a> to continue.'});
+                        res.render('feedbackSubmit', {title: 'Password Changed', message: 'Password changed successfully, <a style="text-decoration:none;color:rgb(47,132,237)" href="/login">Login</a> to continue.'});
                         res.end();
 
                     });              
