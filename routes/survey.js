@@ -28,6 +28,16 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.get('/query', function(req, res, next) {
+    Survey.find({ 'createdBy.id': mongoose.Types.ObjectId(req.user.id) })
+        .select({title: 1, surveyKey: 1})
+        .exec(function (err, docs) {
+            if (err) res.status(500).send("Something went wrong");
+            else res.json(docs);
+
+            res.end();
+        });
+});
 
 router.get('/:surveyKey', function(req, res, next) {
     Survey.findOne({surveyKey: req.params.surveyKey})

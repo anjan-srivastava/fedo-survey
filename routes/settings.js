@@ -33,7 +33,25 @@ const defaultWidgetConfig = {
         ratingIconColor: '#ffc719',
         outreechFavColor: '#ff434b'
     }
+},
+
+defaultCarouselConfig = {
+    licenseReviewLimit: 5,
+    settings: {
+        enabled: true,
+        scrollEnabled: true,
+        showReviewerName: true,
+        showReviewDate: true,
+        maxReviews: 3
+    },
+    design: {
+        backgroundColorOpen: '#ffffff',
+        fontColor: '#4a4a4a',
+        ratingIconColor: '#ffc719',
+    }
+
 };
+
 
 router.get('/widgetUrl', function(req, res, next) {
 
@@ -58,6 +76,7 @@ router.get('/widgetUrl', function(req, res, next) {
                     updated: new Date(),
                     widgetToken: widgetToken,
                     widgetConfig: defaultWidgetConfig,
+                    carouselConfig: defaultCarouselConfig,
                     emailConfig: { fromField: req.user.company, replyTo: req.user.username }
                 }).save(function(err) {
                     if (err) {
@@ -95,10 +114,44 @@ router.get('/widget', function(req, res, next) {
         });
 });
 
+router.get('/carousel', function(req, res, next) {
+    Settings.findOne({username: req.user.username, company: req.user.company})
+        .select({carouselConfig: 1})
+        .exec(function (err ,doc) {
+            if (err)  {
+                res.status(500).send('Something went wrong.');
+                res.end();
+            } else if (doc) {
+                License.findOne({userId: req.user._id})
+                    .exec (function (err, license) {
+                        if (!err && license) {
+                            doc.carouselConfig.licenseReviewLimit = license.maxlimits.review;
+                        }
+                        res.json(doc.carouselConfig);
+                        res.end();
+                    });
+            }
+        });
+});
+
+
 router.put('/widget', function(req, res, next) {
 
     Settings.update({username: req.user.username, company: req.user.company},
             {$set: {widgetConfig: req.body }})
+        .exec(function(err, doc) {
+            if (err) res.json({success: false, msg: 'Error while updating settings.'});
+            else res.json({success: true, msg: 'You settings were successfully saved.'});
+
+            res.end();
+        })
+
+});
+
+router.put('/carousel', function(req, res, next) {
+
+    Settings.update({username: req.user.username, company: req.user.company},
+            {$set: {carouselConfig: req.body }})
         .exec(function(err, doc) {
             if (err) res.json({success: false, msg: 'Error while updating settings.'});
             else res.json({success: true, msg: 'You settings were successfully saved.'});
@@ -120,6 +173,25 @@ router.post('/widget/reset', function(req, res, next) {
             }
         });
 });
+
+router.post('/carousel/reset', function(req, res, next) {
+    Settings.findOne({username: req.user.username, company: req.user.company})
+        .exec(function (err, doc) {
+            if (!err && doc) {
+                Settings.update({username: req.user.username, company: req.user.company},
+                        {$set: { carouselConfig: defaultCarouselConfig }} )
+                    .exec(function (err, doc) {
+                        if (!err) res.json({success: true, msg: 'Successfully restored default settings.', carouselConfig: defaultCarouselConfig});
+                        else res.json({success: false, msg: 'Something went wrong, please try again.'});
+                        res.end();
+                    });
+            } else {
+                res.json({success: false, msg: 'Something went wrong, please try again.'});
+                res.end();
+            }
+        });
+});
+
 
 // resets to default config and returns default configuration
 var resetWidgetConfig = function(widgetToken, callback) {

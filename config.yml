@@ -1,5 +1,6 @@
 app:
     url: http://localhost:3000
+    #url: http://6a93b90a.ngrok.io
 db:
     url: mongodb://localhost/fedo
 analytics:

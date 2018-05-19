@@ -7,6 +7,7 @@ var schema = new mongoose.Schema({
     updated: Date,
     widgetToken: String,
     widgetConfig: Object,
+    carouselConfig: Object,
     emailConfig: Object
 });
 

@@ -85,6 +85,77 @@ router.get('/:widgetToken/widget.js', function(req, res) {
 });
 
 
+router.get('/:widgetToken/carousel.js', function(req, res) {
+    Settings
+        .findOne({widgetToken: req.params.widgetToken})
+        .exec(function (err, setting) {
+            if (err) {
+                res.status(500).send("Something went wrong");
+                res.end();
+            } else if (setting) {
+               var carouselConfig = setting.carouselConfig;
+
+               User
+                .findOne({username: setting.username})
+                .exec(function(err, user) {
+                    if (err) {
+                        res.status(500).send("Something went wrong");
+                        res.end();
+                    } else if (user) {
+
+                      License.findOne({userId: user._id})
+                          .exec(function (err, license) {
+                              if (!err && license)  {
+                                  carouselConfig.licenseReviewLimit = license.maxlimits.review;
+
+                                  // try to unqiuely identify from which page widget has been used.
+                                  handleWidgetRef(req.headers['referer'], license._id);
+                               }
+
+                              FeedbackRecord
+                                .find({'createdBy.id': user._id, status: 'submitted', isPublished: true, surveyKey: req.query.p})
+                                .limit(Math.min(carouselConfig.licenseReviewLimit, carouselConfig.settings.maxReviews))
+                                .exec(function(err, docs) {
+                                    if (err) {
+                                        res.status(500).send("Something went wrong");
+                                    } else if (docs) {
+                                        var reviews = docs.map((d)=> {
+                                            return {
+                                                'rating': d.rating,
+                                                'user': { name: d.name, id: d.emailId },
+                                                'content': {
+                                                    'text': d.feedbacktext,
+                                                    //'media': (Math.random() > 0.5)? ([config.app.url + '/static/codepen.jpg']):([])
+                                                },
+
+                                                'date': dateformat(d.updated, 'mmm d, yyyy')
+                                            };
+                                        
+                                        });
+                                        
+                                        var snippet = fs.readFileSync('views/carousel.min.js.tpl', 'utf8');
+                                        res.setHeader('Content-Type', 'application/javascript');
+                                        snippet = snippet.replace(/#{reviews}/g, JSON.stringify(reviews));
+                                        snippet = snippet.replace(/#{config}/g, JSON.stringify(carouselConfig));
+                                        
+                                        res.send(snippet.replace(/#{staticUrl}/g, config.app.url + "/static"));
+
+                                    }
+
+                                    res.end();
+                                });
+                          
+                          });
+                      
+                    } else res.end();
+
+                });
+            } else res.end();
+            
+        });
+});
+
+
 // requested by shwaytaj
 
 const extractName = function(emailId) {
