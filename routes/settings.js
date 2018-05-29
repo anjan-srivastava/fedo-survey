@@ -40,12 +40,18 @@ defaultCarouselConfig = {
     settings: {
         enabled: true,
         scrollEnabled: true,
+        titleEnabled: true,
+        titleText: 'What our customers say about us!',
+        avgRatingEnabled: true,
         showReviewerName: true,
         showReviewDate: true,
         maxReviews: 3
     },
     design: {
+        backgroundColorCarousel: '#bc5483',
         backgroundColorOpen: '#ffffff',
+        titleFontColor: '#ffffff',
+        nameFontColor: '#000000',
         fontColor: '#4a4a4a',
         ratingIconColor: '#ffc719',
     }

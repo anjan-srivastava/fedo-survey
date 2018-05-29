@@ -169,6 +169,7 @@ const createSampleData = function(user) {
         FeedbackRecord.update({'createdBy.id': mongoose.Types.ObjectId(user._id)}, {$set: {
             status: 'submitted',
             emailId: 'john@doe.com',
+            name: 'John Doe',
             rating: 5,
             feedbacktext: "This is an amazing service! I'v been using it for over a year and it's saved me hours of time and money!",
             sample: true
