@@ -99,6 +99,7 @@ function saveOrEdit(data) {
                     // save feedback record in db
                     (new FeedbackRecord({
                         emailId: mail,
+                        name: extractName(mail),
                         surveyKey: surveyKey,
                         feedbackKey: fkey,
                         status: 'sent',
@@ -115,5 +116,17 @@ function saveOrEdit(data) {
 
     return surveyKey;
 }
+
+const extractName = function(emailId) {
+    // assuming correct email syntax
+    var delimRegex = /(!|#|\$|%|&|'|\*|\+|\-|\/|=|\?|\^|_|`|\{|\}|~|;|"|\d|\.)/;
+    var candidate = emailId.split('@')[0],
+        parts = candidate.split(delimRegex);
+
+    parts = parts.filter(function(p){ return !(delimRegex.test(p) || p==="")});
+
+    return parts.slice(0, Math.min(parts.length, 2)).join(' ');
+
+};
 
 module.exports = saveOrEdit;
