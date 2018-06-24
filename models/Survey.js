@@ -14,7 +14,8 @@ var schema = new mongoose.Schema({
     signature: String,
     created: Date,
     createdBy: Object,
-    sample: Boolean
+    type: ['SAMPLE', 'REGULAR', 'INTEGRATION'],
+    config: Object // extra config, in case of type: INTEGRATION, would be config for automated mails
 });
 
 schema.plugin(mongoosePaginate);

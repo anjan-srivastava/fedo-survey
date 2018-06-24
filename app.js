@@ -24,6 +24,7 @@ var feedbacksubmit = require('./routes/feedbacksubmit');
 var survey = require('./routes/survey');
 var signup = require('./routes/signup');
 var forgotpasswd = require('./routes/forgotpasswd');
+var integrations = require('./routes/integrations');
 
 var analytics = require('./utils/analytics/mixpanel');
 var limits = require('./utils/limits');
@@ -116,10 +117,13 @@ app.get('/login',
   });
   
 app.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login?error=Invalid email or password.' }),
-  function(req, res) {
-    res.redirect('/app/');
-  });
+  passport.authenticate('local', 
+    { 
+      successReturnToOrRedirect: '/app/', 
+      failureRedirect: '/login?error=Invalid email or password.' 
+    }
+  )
+);
   
 app.get('/logout',
   function(req, res){
@@ -130,7 +134,7 @@ app.get('/logout',
   });
 
 app.use('/widgets', widgetManager);
-
+app.use('/integrations/', integrations);
 
 app.use('/api/users', 
         require('connect-ensure-login').ensureLoggedIn(),

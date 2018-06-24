@@ -14,12 +14,17 @@ var router = express.Router();
 mongoose.connect(config.db.url, {useMongoClient: true});
 
 router.get('/', function(req, res, next) {
-    Survey.paginate({ 'createdBy.id': mongoose.Types.ObjectId(req.user.id) }, {
-        page: req.query.page || 1,
-        limit: 10,
-        select: { _id: 0, __v: 0, cta: 0, recepients:0,tags:0,subject:0 },
-        sort: { created: -1 }
-    }, function(err, docs) {
+    Survey.paginate(
+        { 
+            'createdBy.id': mongoose.Types.ObjectId(req.user.id), 
+            type: req.query.type || 'REGULAR'
+        }, 
+        {
+            page: req.query.page || 1,
+            limit: 10,
+            select: { _id: 0, __v: 0, cta: 0, recepients:0,tags:0,subject:0 },
+            sort: { created: -1 }
+        }, function(err, docs) {
         if (err) { 
             res.status(500).send("Something went wrong."); 
         } else {

@@ -9,6 +9,8 @@ var Settings = require('../models/Settings');
 var License = require('../models/License');
 var campaignMailer = require('../utils/mail/campaignMailer');
 
+const CTYPE_REGULAR = 'REGULAR';
+
 function incrementEmailLimits(userId, byvalue = 1) {
    License.findOne({userId: userId})
       .exec(function (err, doc) {
@@ -27,6 +29,8 @@ function incrementEmailLimits(userId, byvalue = 1) {
 function saveOrEdit(data) {
     const recepients = data.recepients 
     const testRun = data.testRun;
+    data.type  = data.type || CTYPE_REGULAR;
+
     let surveyKey;
 
     if (recepients && typeof recepients.map === 'function') {
@@ -40,6 +44,7 @@ function saveOrEdit(data) {
             if (!err && result) {
                 surveyKey = data.surveyKey;
                 surveyId = result._id;
+                data.type = result.type; // make sure we don't override survey type once set
                 console.log("Survey Id Callback: ", surveyId); 
             }
             

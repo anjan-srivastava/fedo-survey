@@ -11,3 +11,12 @@ mail:
         apiKey: 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
     from: reviews@outreech.com
     fromName: Team Outreech
+integrations:
+    shopify:
+        app_uri: https://83e3f6c1.ngrok.io/integrations/shopify/install
+        redirect_uri: https://83e3f6c1.ngrok.io/integrations/shopify/connect
+        apiKey: 1f497a56628f0518250ddfca6db18e57
+        apiSecret: 02b709a231505b66b05481f40f4b80b7
+        scope:
+            - read_products
+

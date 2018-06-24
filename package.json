@@ -31,6 +31,7 @@
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "serve-favicon": "~2.4.5",
+    "shopify-node-api": "^1.8.0",
     "siema": "^1.5.1"
   }
 }

@@ -155,7 +155,7 @@ const createSampleData = function(user) {
       signature: '<p>Team Outreech</p>',
       description: 'Feature Feedback: Outreech Campaigns',
       saveOnly: 'true',
-      sample: true
+      type: 'SAMPLE'
     };
 
     sampleCampaign.createdBy = { name: user.name, id: user._id };
